@@ -43,6 +43,8 @@ def cr(graph_num, graphInf:graphInfo):
     colouring_multiset = {vertex.label: [] for vertex in G.vertices}
     current_colouring = {vertex.label: 1 for vertex in G.vertices}
 
+    previous_partition = {}
+
     # step 2 init iteration count to 0
     itr_count = 0
     # print(f"graph: {G}")
@@ -76,23 +78,36 @@ def cr(graph_num, graphInf:graphInfo):
                 graphInf.current_colour += 1
                 graphInf.colour_mapping[neighbours_list_tuple] = graphInf.current_colour # {(1,1): 5}
 
-        for vert, neighbours_list in colouring_multiset.items():
+        # for vert, neighbours_list in colouring_multiset.items(): #sjekker for vert.label = 0 vi finner [0,2], forje part = [0,2]
+            # neighbours_list_tuple = tuple(neighbours_list)
+            # current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
+        
+        nodes_to_skip = []
+        for prev_partition, curr_partition in zip(previous_partition.values(), partition_dict.values()):
+            if prev_partition == curr_partition:
+                nodes_to_skip = [x for x in curr_partition]
+
+        for vert, neighbours_list in colouring_multiset.items(): #sjekker for vert.label = 0 vi finner [0,2], forje part = [0,2]
+            if vert in nodes_to_skip:
+                continue
             neighbours_list_tuple = tuple(neighbours_list)
             current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
 
-
-        if previous_colouring == current_colouring:
+        if previous_colouring == current_colouring or itr_count == 10:
             # print(f"\nStable colouring reached after {itr_count} iterations")
             frequency_counter = Counter(Counter(current_colouring.values()).values())
             isDiscrete = False
             if list(frequency_counter.values())[0] == len(G.vertices):
                 isDiscrete = True
             # print(f"colouring multiset: {colouring_multiset}")
-            # print(f"colour mapping: {colour_mapping}")
-            print(f"used colours: {assigned_colours}")
+            print(f"colour mapping: {graphInf.colour_mapping}")
+            print(f"colouring: {current_colouring}")
+            # print(f"used colours: {assigned_colours}")
+            print(f"previous partition: {previous_partition}, current partition: {partition_dict}")
 
             return dict(frequency_counter), itr_count, isDiscrete 
 
+        previous_partition = partition_dict.copy()
         previous_colouring = current_colouring.copy()
         itr_count += 1
         print(graphInf.current_colour)
