@@ -18,7 +18,7 @@ class graphInfo():
 
 
 def colour_refinement():
-    with open(enkleGrafer[0]) as f:
+    with open(graphlist[1]) as f:
         L = load_graph(f, read_list=True)
 
     results = []
@@ -85,7 +85,8 @@ def cr(graph_num, graphInf:graphInfo):
         nodes_to_skip = []
         for prev_partition, curr_partition in zip(previous_partition.values(), partition_dict.values()):
             if prev_partition == curr_partition:
-                nodes_to_skip = [x for x in curr_partition]
+                nodes_to_skip_current = [x for x in curr_partition]
+                nodes_to_skip.extend(nodes_to_skip_current)
 
         for vert, neighbours_list in colouring_multiset.items(): #sjekker for vert.label = 0 vi finner [0,2], forje part = [0,2]
             if vert in nodes_to_skip:
@@ -93,7 +94,7 @@ def cr(graph_num, graphInf:graphInfo):
             neighbours_list_tuple = tuple(neighbours_list)
             current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
 
-        if previous_colouring == current_colouring or itr_count == 10:
+        if previous_colouring == current_colouring:
             # print(f"\nStable colouring reached after {itr_count} iterations")
             frequency_counter = Counter(Counter(current_colouring.values()).values())
             isDiscrete = False
