@@ -10,6 +10,22 @@ enkleGrafer = ['crSamples/enkelGraf.grl']
 
 benchmarklist = ['Benchmark_instances/CrefBenchmark1.grl', 'Benchmark_instances/CrefBenchmark6.grl', 'Benchmark_instances/CrefBenchmark5.grl', 'Benchmark_instances/CrefBenchmark2.grl']
 
+graphlist2 = [
+    'crSamples/colorref_largeexample_4_1026.grl',
+    'crSamples/colorref_largeexample_6_960.grl',
+    'crSamples/colorref_smallexample_2_49.grl',
+    'crSamples/colorref_smallexample_4_16.grl',
+    'crSamples/colorref_smallexample_4_7.grl',
+    'crSamples/colorref_smallexample_6_15.grl',
+    'crSamples/cref9vert3comp_10_27.grl',
+    'crSamples/cref9vert_4_9.grl',
+    'crSamples/test_3reg.grl',
+    'crSamples/test_cref9.grl',
+    'crSamples/test_cycles.grl',
+    'crSamples/test_empty.grl',
+    'crSamples/test_iter.grl',
+    'crSamples/test_trees.grl'
+]
 
 class graphInfo():
     def __init__(self):
@@ -18,17 +34,34 @@ class graphInfo():
 
 
 def colour_refinement():
-    with open(benchmarklist[3]) as f:
+    with open(graphlist2[6]) as f:
         L = load_graph(f, read_list=True)
 
     results = []
+    graph_colour_freq = []
     graphInf = graphInfo()
     # this is where i call the function once for each graph
     for i in range(len(L[0])):
-        res = cr(L[0][i], graphInf)
-        results.append(res)
+        # res = cr(L[0][i], graphInf)
+        # results.append(res)
+        cf, itr, discrete, freq_thing = cr(L[0][i], graphInf)
+        results.append((cf, itr, discrete))
+        graph_colour_freq.append(freq_thing)
 
     print(results)
+    equiv = []
+    equiv_classes = []
+    for i in range(len(graph_colour_freq)):
+        for j in range(len(graph_colour_freq)):
+            if i != j and (i,j) not in equiv and (j,i) not in equiv:
+                if results[i] == results[j]:
+                    if graph_colour_freq[i] == graph_colour_freq[j]:
+                        temp = ([i,j], results[i])
+                        equiv_classes.append(temp)
+                        equiv.append((i,j))
+
+    print("here it is\n")
+    print(equiv_classes)
 
 
 def cr(graph_num, graphInf:graphInfo):
@@ -67,47 +100,42 @@ def cr(graph_num, graphInf:graphInfo):
 
         for vert, neighbours_list in colouring_multiset.items():
             neighbours_list_tuple = tuple(neighbours_list)
-            # if (neighbours_list_tuple not in partition_dict):
-            #     partition_dict[neighbours_list_tuple] = []
-            #     colour_mapping[neighbours_list_tuple] = 0
-            #     current_colour += 1
-            #     colour_mapping[neighbours_list_tuple] = current_colour
-            # partition_dict[neighbours_list_tuple].append(vert)
             partition_dict.setdefault(neighbours_list_tuple, []).append(vert)
             if neighbours_list_tuple not in graphInf.colour_mapping:
                 graphInf.current_colour += 1
                 graphInf.colour_mapping[neighbours_list_tuple] = graphInf.current_colour # {(1,1): 5}
 
-        # for vert, neighbours_list in colouring_multiset.items(): #sjekker for vert.label = 0 vi finner [0,2], forje part = [0,2]
-            # neighbours_list_tuple = tuple(neighbours_list)
-            # current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
-        
         nodes_to_skip = []
         for prev_partition, curr_partition in zip(previous_partition.values(), partition_dict.values()):
             if prev_partition == curr_partition:
                 nodes_to_skip_current = [x for x in curr_partition]
                 nodes_to_skip.extend(nodes_to_skip_current)
 
-        for vert, neighbours_list in colouring_multiset.items(): #sjekker for vert.label = 0 vi finner [0,2], forje part = [0,2]
-            if vert in nodes_to_skip:
-                continue
+        stable = False
+        if len(nodes_to_skip) == len(G.vertices):
+            stable = True
+
+        for vert, neighbours_list in colouring_multiset.items(): 
+            # if vert in nodes_to_skip:
+                # continue
             neighbours_list_tuple = tuple(neighbours_list)
             current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
 
-        if previous_colouring == current_colouring:
+        if previous_colouring == current_colouring or stable:
             print(f"\nStable colouring reached after {itr_count} iterations")
             frequency_counter = Counter(Counter(current_colouring.values()).values())
+            freq_thing = Counter(current_colouring.values())
+            # print(f"what have i counted?{freq_thing}")
             isDiscrete = False
             if list(frequency_counter.values())[0] == len(G.vertices):
                 isDiscrete = True
             # print(f"colouring multiset: {colouring_multiset}")
             # print(f"colour mapping: {graphInf.colour_mapping}")
             # print(f"colouring: {current_colouring}")
-            # print(f"used colours: {assigned_colours}")
             # print(f"previous partition: {previous_partition}, current partition: {partition_dict}")
 
-            print(f"final colour num: {graphInf.current_colour}")
-            return dict(frequency_counter), itr_count, isDiscrete 
+            # print(f"final colour num: {graphInf.current_colour}")
+            return dict(frequency_counter), itr_count, isDiscrete, freq_thing
 
         previous_partition = partition_dict.copy()
         previous_colouring = current_colouring.copy()
