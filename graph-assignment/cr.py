@@ -10,6 +10,14 @@ enkleGrafer = ['crSamples/enkelGraf.grl']
 
 benchmarklist = ['Benchmark_instances/CrefBenchmark1.grl', 'Benchmark_instances/CrefBenchmark6.grl', 'Benchmark_instances/CrefBenchmark5.grl', 'Benchmark_instances/CrefBenchmark2.grl']
 
+benchmarklist2 = [
+    'Benchmark_instances/CrefBenchmark1.grl',
+    'Benchmark_instances/CrefBenchmark2.grl',
+    'Benchmark_instances/CrefBenchmark3.grl',
+    'Benchmark_instances/CrefBenchmark4.grl',
+    'Benchmark_instances/CrefBenchmark5.grl',
+    'Benchmark_instances/CrefBenchmark6.grl'
+]
 graphlist2 = [
     'crSamples/colorref_largeexample_4_1026.grl',
     'crSamples/colorref_largeexample_6_960.grl',
@@ -34,7 +42,7 @@ class graphInfo():
 
 
 def colour_refinement():
-    with open(graphlist2[6]) as f:
+    with open(benchmarklist2[5]) as f:
         L = load_graph(f, read_list=True)
 
     results = []
