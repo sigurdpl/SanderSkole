@@ -18,7 +18,7 @@ class graphInfo():
 
 
 def colour_refinement():
-    with open(graphlist[1]) as f:
+    with open(benchmarklist[3]) as f:
         L = load_graph(f, read_list=True)
 
     results = []
@@ -95,23 +95,24 @@ def cr(graph_num, graphInf:graphInfo):
             current_colouring[vert] = graphInf.colour_mapping[neighbours_list_tuple] # {1: (1,1)]}
 
         if previous_colouring == current_colouring:
-            # print(f"\nStable colouring reached after {itr_count} iterations")
+            print(f"\nStable colouring reached after {itr_count} iterations")
             frequency_counter = Counter(Counter(current_colouring.values()).values())
             isDiscrete = False
             if list(frequency_counter.values())[0] == len(G.vertices):
                 isDiscrete = True
             # print(f"colouring multiset: {colouring_multiset}")
-            print(f"colour mapping: {graphInf.colour_mapping}")
-            print(f"colouring: {current_colouring}")
+            # print(f"colour mapping: {graphInf.colour_mapping}")
+            # print(f"colouring: {current_colouring}")
             # print(f"used colours: {assigned_colours}")
-            print(f"previous partition: {previous_partition}, current partition: {partition_dict}")
+            # print(f"previous partition: {previous_partition}, current partition: {partition_dict}")
 
+            print(f"final colour num: {graphInf.current_colour}")
             return dict(frequency_counter), itr_count, isDiscrete 
 
         previous_partition = partition_dict.copy()
         previous_colouring = current_colouring.copy()
         itr_count += 1
-        print(graphInf.current_colour)
+        # print(graphInf.current_colour)
 
 # print(cr())
 # graphlist = ['crSamples/test_3reg.grl', 'crSamples/colorref_smallexample_4_7.grl', 'crSamples/colorref_smallexample_6_15.grl', 'crSamples/test_iter.grl', 'crSamples/colorref_largeexample_6_960.grl']
