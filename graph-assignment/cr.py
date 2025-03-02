@@ -89,7 +89,8 @@ def cr(graph_num, graphInf:graphInfo):
                 isDiscrete = True
             # print(f"colouring multiset: {colouring_multiset}")
             # print(f"colour mapping: {colour_mapping}")
-            # print(f"used colours: {assigned_colours}")
+            print(f"used colours: {assigned_colours}")
+
             return dict(frequency_counter), itr_count, isDiscrete 
 
         previous_colouring = current_colouring.copy()
