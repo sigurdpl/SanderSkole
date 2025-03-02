@@ -3,7 +3,7 @@ from graph_io import load_graph, write_dot, save_graph
 import copy
 from collections import Counter, defaultdict
 import cProfile
-
+# nothing
 graphlist = ['crSamples/test_3reg.grl', 'crSamples/colorref_smallexample_4_7.grl', 'crSamples/colorref_smallexample_6_15.grl', 'crSamples/test_iter.grl', 'crSamples/colorref_largeexample_6_960.grl']
 
 enkleGrafer = ['crSamples/enkelGraf.grl']
