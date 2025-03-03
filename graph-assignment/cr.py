@@ -1,3 +1,4 @@
+from typing import final
 from graph import *
 from graph_io import load_graph, write_dot, save_graph
 import copy
@@ -42,35 +43,53 @@ class graphInfo():
 
 
 def colour_refinement():
-    with open(benchmarklist2[5]) as f:
+    with open(benchmarklist2[4]) as f:
         L = load_graph(f, read_list=True)
 
     results = []
     graph_colour_freq = []
+    graph_colour_freq_list = []
+    colour_freq_list = []
+    itr_list = []
+    discrete_list = []
     graphInf = graphInfo()
     # this is where i call the function once for each graph
     for i in range(len(L[0])):
         # res = cr(L[0][i], graphInf)
         # results.append(res)
         cf, itr, discrete, freq_thing = cr(L[0][i], graphInf)
+        temporary_colour_freq = ()
+        temporary_freq_thing = ()
+        for num in sorted(cf):
+            temporary_colour_freq += tuple([num] * cf[num])
+        for num in sorted(freq_thing):
+            temporary_freq_thing += tuple([num] * freq_thing[num])
+        graph_colour_freq_list.append(temporary_freq_thing)
+        colour_freq_list.append(temporary_colour_freq)
+        itr_list.append(itr)
+        discrete_list.append(discrete)
         results.append((cf, itr, discrete))
         graph_colour_freq.append(freq_thing)
 
-    print(results)
-    equiv = []
-    equiv_classes = []
-    for i in range(len(graph_colour_freq)):
-        for j in range(len(graph_colour_freq)):
-            if i != j and (i,j) not in equiv and (j,i) not in equiv:
-                if results[i] == results[j]:
-                    if graph_colour_freq[i] == graph_colour_freq[j]:
-                        temp = ([i,j], results[i])
-                        equiv_classes.append(temp)
-                        equiv.append((i,j))
+    # print(results)
 
-    print("here it is\n")
-    print(equiv_classes)
+    equiv_dict = {}
+    for i in range(len(L[0])):
+        equiv_key = (colour_freq_list[i], itr_list[i], discrete_list[i], graph_colour_freq_list[i])
+        if equiv_key not in equiv_dict:
+            equiv_dict[equiv_key] = []
+        equiv_dict[equiv_key].append(i)
 
+    print("here is the equiv dict")
+    print(equiv_dict.values())
+
+    final_output = []
+    for i in equiv_dict.values():
+        temp_final_output = tuple([i, list(colour_freq_list[i[0]]), itr_list[i[0]], discrete_list[i[0]]])
+        final_output.append(temp_final_output)
+
+    print("here is the final output?")
+    print(final_output)
 
 def cr(graph_num, graphInf:graphInfo):
     # with open(benchmarklist[1]) as f:
